@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://likoli.cn:27017/imgs
+
+liko:
+  imgs:
+    url: http://likoli.cn/imgs
