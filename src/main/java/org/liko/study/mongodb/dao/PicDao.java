@@ -1,17 +1,20 @@
 package org.liko.study.mongodb.dao;
 
-import lombok.Data;
-import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.gridfs.GridFSFindIterable;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author liko
@@ -31,5 +34,22 @@ public class PicDao {
         gridFsTemplate.store(inputStream, fileName);
     }
 
+    public List<String> findAll() {
+        List<String> fileNames = new ArrayList<>();
+
+        Query query = new Query();
+        GridFSFindIterable gridFSFiles = gridFsTemplate.find(query);
+        MongoCursor<GridFSFile> iterator = gridFSFiles.iterator();
+        while (iterator.hasNext()) {
+            GridFSFile next = iterator.next();
+            fileNames.add(next.getFilename());
+        }
+        return fileNames;
+    }
+
+    public void deleteByName(String fileName) {
+        Query query = new Query(Criteria.where("filename").is(fileName));
+        gridFsTemplate.delete(query);
+    }
 }
 

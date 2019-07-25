@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -30,11 +33,11 @@ public class FileController {
     private PicDao picDao;
 
     @RequestMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file, Map<String, Object> paramMap) {
+    public String upload(@RequestParam("file") MultipartFile file, Model model) {
 
         try {
             if (file.isEmpty()) {
-                paramMap.put("desc","文件为空");
+                model.addAttribute("desc","文件为空");
             }
 
             String fileName = file.getOriginalFilename();
@@ -46,14 +49,29 @@ public class FileController {
 
             picDao.save(inputStream, newFileName);
 
-
-
-            paramMap.put("desc", "上传成功");
-            paramMap.put("link", baseUrl + "/" + newFileName);
+            model.addAttribute("desc", "上传成功");
+            model.addAttribute("link", baseUrl + "/" + newFileName);
         } catch (Exception e) {
             e.printStackTrace();
-            paramMap.put("desc", "上传失败");
+            model.addAttribute("desc", "上传失败");
         }
         return "result";
+    }
+
+    @RequestMapping("/all")
+    public String findAll(Model model) {
+        List<String> fileNames = picDao.findAll();
+
+        model.addAttribute("fileNames", fileNames);
+        model.addAttribute("baseUrl", baseUrl);
+
+        return "query";
+    }
+
+    @RequestMapping("/del/{fileName}")
+    @ResponseBody
+    public String deleteByFileName(@PathVariable("fileName") String fileName) {
+        picDao.deleteByName(fileName);
+        return "success";
     }
 }

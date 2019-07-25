@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>所有图片</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        .r_content {
+            width: 600px;
+            margin: 160px auto;
+        }
+    </style>
+</head>
+<body>
+<div class="r_content">
+    <table class="table table-haver">
+        <thead>
+            <th scope="col">FileName</th>
+            <th scope="col">Option</th>
+        </thead>
+        <tbody>
+            <tr th:each="fileName : ${fileNames}">
+                <td th:text="${fileName}">liko.jpg</td>
+                <td><a target="_blank" class="btn btn-primary" th:href="${baseUrl} + '/' + ${fileName}">查看详情</a> <a class="file-del btn btn-primary" th:url="${fileName}" >删除</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script type="text/javascript">
+    window.onload = function (ev) {
+        $('.file-del').click(function() {
+            $.ajax({
+                type: 'GET',
+                url: '/file/del/' + this.getAttribute("url"),
+                success: function (data) {
+                    alert(data);
+                    location.reload("./file/all")
+                }
+            });
+        });
+    }
+</script>
+</body>
+</html>
