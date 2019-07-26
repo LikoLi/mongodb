@@ -1,6 +1,7 @@
 package org.liko.study.mongodb.controller;
 
 import org.liko.study.mongodb.dao.PicDao;
+import org.liko.study.mongodb.util.MD5Utitl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -41,11 +42,12 @@ public class FileController {
             }
 
             String fileName = file.getOriginalFilename();
+            String prefixName = fileName.substring(0, fileName.lastIndexOf("."));
             String suffixName = fileName.substring(fileName.lastIndexOf("."));
 
-            InputStream inputStream = file.getInputStream();
+            String newFileName = prefixName + "_" + MD5Utitl.getFileMD5String(file.getInputStream()) + suffixName;
 
-            String newFileName = UUID.randomUUID().toString() + suffixName;
+            InputStream inputStream = file.getInputStream();
 
             picDao.save(inputStream, newFileName);
 
